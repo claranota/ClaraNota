@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ClaraNota: calculadores de notes en català</title>
+<meta name="description" content="Calcula quina nota necessites a l’examen final, la mitjana ponderada del curs i la nota mitjana de batxillerat. Gratis i en català.">
+<meta property="og:title" content="ClaraNota: calculadores de notes en català">
+<meta property="og:description" content="Calcula què necessites a l’examen final i la mitjana de cada assignatura. Gratis i en català.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap">
+<style>
+:root{--bg:#EEF0FB;--grid:#D9DDF3;--ink:#1A1F5C;--muted:#555B8E;--card:#FFFFFF;--line:#C5CBEC;--mark:#FFD84A;--markink:#1A1F5C;--bad:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12143A;--grid:#1C1F4F;--ink:#EEF0FF;--muted:#A9AEDB;--card:#1B1E4D;--line:#363A7C;--bad:#FF8A80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12143A;--grid:#1C1F4F;--ink:#EEF0FF;--muted:#A9AEDB;--card:#1B1E4D;--line:#363A7C;--bad:#FF8A80;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;color:var(--ink);font:400 1.0625rem/1.55 Figtree,system-ui,sans-serif}
+main{max-width:54rem;margin:0 auto;padding:1.5rem 1rem 3rem}
+h1{font:800 clamp(2.4rem,9vw,3.6rem)/1 "Bricolage Grotesque",Figtree,sans-serif;margin:1rem 0 .4rem;letter-spacing:-.02em}
+h1 span{background:var(--mark);color:var(--markink);padding:0 .2em;border-radius:.15em}
+.lead{color:var(--muted);margin:0 0 1.5rem;max-width:34rem}
+[role=tablist]{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+[role=tab]{font:600 .98rem Figtree,system-ui,sans-serif;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:.6rem;padding:.55rem .9rem;cursor:pointer}
+[role=tab][aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:1rem;padding:1.2rem}
+.panel h2{font:600 1.35rem "Bricolage Grotesque",Figtree,sans-serif;margin:0 0 .3rem}
+.hint{color:var(--muted);margin:0 0 1rem;font-size:.97rem}
+.head,.row{display:grid;grid-template-columns:var(--cols);gap:.5rem;align-items:center}
+.head{color:var(--muted);font-size:.85rem;margin-bottom:.3rem}
+.row{margin-bottom:.5rem}
+input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:.5rem;padding:.5rem .6rem;min-width:0}
+.x{font:600 1.3rem/1 Figtree,sans-serif;color:var(--muted);background:none;border:0;cursor:pointer;border-radius:.4rem;height:2.4rem}
+.x:hover{color:var(--bad)}
+.add{font:600 .95rem Figtree,sans-serif;color:var(--ink);background:none;border:2px dashed var(--line);border-radius:.5rem;padding:.5rem .9rem;cursor:pointer;margin:.2rem 0 1rem}
+.opt{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.opt input{width:6rem}
+.res{background:var(--mark);color:var(--markink);border-radius:.8rem;padding:1rem 1.1rem;min-height:5rem}
+.res b{display:block;font:800 clamp(1.8rem,7vw,2.6rem)/1.1 "Bricolage Grotesque",Figtree,sans-serif}
+.res p{margin:.3rem 0 0}
+.res.err{background:var(--card);color:var(--bad);border:2px solid var(--bad)}
+.res.err b{font-size:1.2rem}
+.wrap{display:grid;grid-template-columns:12.5rem 1fr;gap:1.1rem;align-items:start}
+.subjs{display:flex;flex-direction:column;gap:.35rem;max-height:70vh;overflow-y:auto}
+.subj{font:600 .95rem Figtree,system-ui,sans-serif;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:.6rem;padding:.5rem .7rem;cursor:pointer;display:flex;justify-content:space-between;gap:.5rem;width:100%;text-align:left}
+.subj span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.subj small{color:var(--muted);font-weight:600;flex-shrink:0}
+.subj[aria-pressed=true]{background:var(--mark);color:var(--markink);border-color:var(--mark)}
+.subj[aria-pressed=true] small{color:var(--markink)}
+.subj.add{border-style:dashed;background:none}
+.glob{color:var(--muted);font-size:.93rem;margin:.2rem 0 1rem;min-height:1.4em}
+.namebar{display:flex;gap:.5rem;margin-bottom:.8rem}
+.namebar input{font:600 1.15rem "Bricolage Grotesque",Figtree,sans-serif}
+.del{font:600 .9rem Figtree,sans-serif;color:var(--bad);background:none;border:2px solid var(--line);border-radius:.5rem;padding:0 .8rem;cursor:pointer;white-space:nowrap}
+.cat{border:2px solid var(--line);border-radius:.8rem;padding:.7rem;margin-bottom:.6rem}
+.cat-top{display:grid;grid-template-columns:1fr 4.2rem auto 2.4rem;gap:.4rem;align-items:center;margin-bottom:.5rem}
+.grades{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.grades .g{width:4.2rem}
+.mini{font:600 1.1rem/1 Figtree,sans-serif;color:var(--ink);background:none;border:2px solid var(--line);border-radius:.5rem;width:2.3rem;height:2.4rem;cursor:pointer}
+.ca{margin:.5rem 0 0;color:var(--muted);font-size:.9rem}
+h3{font:600 1.05rem "Bricolage Grotesque",Figtree,sans-serif;margin:1.3rem 0 .3rem}
+.fa{display:grid;grid-template-columns:1fr 5rem;gap:.5rem;align-items:center;margin-bottom:.5rem}
+select{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:.5rem;padding:.5rem .3rem;width:100%;min-width:0}
+.how{color:var(--muted);font-size:.93rem;margin:1rem 0 0}
+footer{color:var(--muted);font-size:.88rem;margin-top:1.5rem}
+@media (max-width:30rem){.head span:first-child{visibility:hidden}.row,.head{gap:.35rem}}
+@media (max-width:42rem){.wrap{grid-template-columns:1fr}.subjs{max-height:11rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>Clara<span>Nota</span></h1>
+<p class="lead">Calculadores de notes gratis i en català, per a l’ESO, el batxillerat i la universitat.</p>
+
+<div role="tablist" aria-label="Calculadores">
+<button role="tab" id="t-assignatures" aria-controls="p-assignatures">Les meves assignatures</button>
+<button role="tab" id="t-batxillerat" aria-controls="p-batxillerat">Accés a la universitat</button>
+</div>
+
+<section class="panel" id="p-assignatures" role="tabpanel" aria-labelledby="t-assignatures">
+<h2>Les teves assignatures</h2>
+<p class="hint">Crea un apartat per cada part de la nota (exàmens, treballs…), digues quant pesa i escriu-hi totes les notes. La mitjana de l’apartat és la que compta aquell %. Deixa buida la casella d’un examen que encara no has fet i la web et diu què hi has de treure. Totes les caselles d’un apartat pesen igual.</p>
+<div class="wrap"><aside><div class="subjs" id="subjs"></div><p class="glob" id="glob"></p></aside><div id="editor"></div></div>
+<p class="how">Es desa automàticament en aquest dispositiu.</p>
+</section>
+
+<section class="panel" id="p-batxillerat" role="tabpanel" aria-labelledby="t-batxillerat" hidden>
+<h2>Nota d’accés i d’admissió a la universitat</h2>
+<p class="hint">Escriu la nota mitjana de tot el batxillerat i les notes de la PAU que ja tens. Pots deixar buides les que encara no saps.</p>
+<div class="opt"><label for="nmb">Nota mitjana de batxillerat (compta un 60 %):</label><input id="nmb" inputmode="decimal" placeholder="Ex.: 8,15"></div>
+<h3>Fase general de la PAU (compta un 40 %)</h3>
+<div id="fg"></div>
+<h3>Fase d’admissió: matèries específiques</h3>
+<p class="hint">Fins a 3 matèries (compten les 2 millors). Tria quant pondera cada una per al grau que vols: 0, 0,1 o 0,2. Només sumen si has tret un 5 o més.</p>
+<div class="head" style="--cols:1fr 4.5rem 5.5rem"><span>Matèria</span><span>Nota</span><span>Pondera</span></div>
+<div id="esp"></div>
+<div class="res" id="r-batxillerat" aria-live="polite"></div>
+</section>
+
+<footer>Càlculs orientatius. La nota oficial te la dona el teu centre o la universitat. Les teves dades es desen només en aquest navegador.</footer>
+</main>
+
+<script>const $=s=>document.querySelector(s);
+const num=v=>{v=String(v==null?"":v).trim().replace(",",".");return v===""?NaN:Number(v)};
+const fmt=(n,d=2)=>n.toFixed(d).replace(".",",");
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bad=g=>isNaN(g)||g<0||g>10;
+const uid=()=>Math.random().toString(36).slice(2,8);
+const KEY="quinanota-v1";
+const defaults=()=>{const id=uid();return{sel:id,subjects:[{id,name:"Matemàtiques",target:"5",cats:[{name:"Exàmens",w:"60",g:["6","7","5,5",""]},{name:"Treballs",w:"20",g:["8"]},{name:"Examen final",w:"20",g:[""]}]}]}};
+let S=null;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!Array.isArray(S.subjects)||!S.subjects.length)S=defaults();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const cur=()=>S.subjects.find(s=>s.id===S.sel)||S.subjects[0];
+
+function calcSub(s){
+ let sc=0,dw=0,tw=0,err="";const ca=[];
+ s.cats.forEach(c=>{
+  const w=num(c.w)||0;tw+=w;
+  if(w<0||w>100)err="Els pesos han de ser entre 0 i 100.";
+  const n=Math.max(1,c.g.length),gs=c.g.map(num).filter(x=>!isNaN(x));
+  if(gs.some(bad))err="Les notes han de ser entre 0 i 10.";
+  const a=gs.length?gs.reduce((p,q)=>p+q,0)/gs.length:NaN;
+  ca.push({a,k:gs.length,n});if(gs.length){const wd=w*gs.length/n;sc+=a*wd;dw+=wd}
+ });
+ return{sc,dw,tw,err,ca,avg:dw?sc/dw:NaN};
+}
+function show(id,main,sub,err){const e=$("#"+id);if(!e)return;e.className="res"+(err?" err":"");e.innerHTML="<b>"+main+"</b>"+(sub?"<p>"+sub+"</p>":"")}
+
+function update(){
+ const avgs=[];
+ S.subjects.forEach(x=>{
+  const r=calcSub(x);if(!r.err&&!isNaN(r.avg))avgs.push(r.avg);
+  const el=document.querySelector('[data-avg="'+x.id+'"]');
+  if(el)el.textContent=(!r.err&&!isNaN(r.avg))?fmt(r.avg):"–";
+ });
+ $("#glob").textContent=avgs.length>1?"Mitjana de totes les assignatures: "+fmt(avgs.reduce((a,b)=>a+b,0)/avgs.length):"";
+ const s=cur(),r=calcSub(s);
+ r.ca.forEach((o,i)=>{const e=$("#ca-"+i);if(e)e.textContent=!o.k?"Encara sense notes: tot l’apartat compta com a pendent.":"Mitjana de l’apartat: "+fmt(o.a)+(o.k<o.n?" (en falten "+(o.n-o.k)+")":"")});
+ const t=num(s.target);
+ if(r.err)show("r-sub","Revisa les dades",r.err,1);
+ else if(isNaN(r.avg))show("r-sub","Escriu alguna nota","Afegeix notes dins d’algun apartat per veure la mitjana.",1);
+ else{
+  const main="Mitjana actual: "+fmt(r.avg);let sub="";
+  if(Math.abs(r.tw-100)>0.01)sub="Atenció: els pesos sumen "+fmt(r.tw,0)+" %, hauria de ser 100 %. "+(r.tw<100?"Et falten "+fmt(100-r.tw,0)+" %.":"Te’n passes "+fmt(r.tw-100,0)+" %.");
+  else if(bad(t))sub="Escriu una nota objectiu entre 0 i 10 per saber què et cal.";
+  else{
+   const pend=100-r.dw,got=r.sc/100;
+   if(pend<0.01)sub="Avaluació completa. "+(r.avg>=t?"Arribes a un ":"No arribes a un ")+fmt(t)+".";
+   else{
+    const need=(t-got)/(pend/100),max=got+pend/10;
+    if(need<=0)sub="Ja arribes a un "+fmt(t)+" encara que treguis un 0 al que et queda ("+fmt(pend,0)+" %).";
+    else if(need>10)sub="No arribes a un "+fmt(t)+": fins i tot amb un 10 a la resta, la màxima seria un "+fmt(max)+".";
+    else sub="Per arribar a un "+fmt(t)+" et cal un "+fmt(Math.ceil(need*100)/100)+" de mitjana al que et queda ("+fmt(pend,0)+" % de la nota).";
+   }
+  }
+  show("r-sub",main,sub);
+ }
+ save();
+}
+
+function render(){
+ const s=cur();S.sel=s.id;
+ $("#subjs").innerHTML='<button class="subj add" data-act="newsub">+ Assignatura</button>'+S.subjects.map(x=>'<button class="subj" aria-pressed="'+(x.id===s.id)+'" data-sel="'+x.id+'"><span data-n="'+x.id+'">'+(esc(x.name)||"Sense nom")+'</span><small data-avg="'+x.id+'"></small></button>').join("");
+ $("#editor").innerHTML='<div class="namebar"><input data-f="sname" value="'+esc(s.name)+'" aria-label="Nom de l’assignatura"><button class="del" data-act="delsub">Elimina</button></div>'+
+ s.cats.map((c,ci)=>'<div class="cat"><div class="cat-top"><input data-f="cname" data-c="'+ci+'" value="'+esc(c.name)+'" placeholder="Apartat (ex.: Exàmens)" aria-label="Nom de l’apartat"><input data-f="cw" data-c="'+ci+'" value="'+esc(c.w)+'" inputmode="decimal" aria-label="Pes de l’apartat en %"><span>%</span><button class="x" data-act="delcat" data-c="'+ci+'" aria-label="Elimina l’apartat">×</button></div><div class="grades">'+
+  c.g.map((g,gi)=>'<input class="g" data-f="g" data-c="'+ci+'" data-i="'+gi+'" value="'+esc(g)+'" inputmode="decimal" placeholder="Pendent" aria-label="Nota '+(gi+1)+'">').join("")+
+  '<button class="mini" data-act="addg" data-c="'+ci+'" aria-label="Afegeix una nota">+</button><button class="mini" data-act="delg" data-c="'+ci+'" aria-label="Treu l’última nota">−</button></div><p class="ca" id="ca-'+ci+'"></p></div>').join("")+
+ '<button class="add" data-act="addcat">+ Afegeix un apartat</button><div class="opt"><label for="target">Nota que vols treure:</label><input id="target" data-f="target" value="'+esc(s.target)+'" inputmode="decimal"></div><div class="res" id="r-sub" aria-live="polite"></div>';
+ update();
+}
+
+document.addEventListener("input",e=>{
+ const t=e.target,f=t.dataset&&t.dataset.f;if(!f)return;
+ const s=cur(),c=s.cats[t.dataset.c];
+ if(f==="sname"){s.name=t.value;const n=document.querySelector('[data-n="'+s.id+'"]');if(n)n.textContent=t.value||"Sense nom"}
+ else if(f==="target")s.target=t.value;
+ else if(f==="cname")c.name=t.value;
+ else if(f==="cw")c.w=t.value;
+ else if(f==="g")c.g[t.dataset.i]=t.value;
+ update();
+});
+let armed=0;
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-act],[data-sel]");if(!b)return;
+ const s=cur(),a=b.dataset.act,c=s.cats[b.dataset.c];
+ if(b.dataset.sel){S.sel=b.dataset.sel;armed=0;return render()}
+ if(a==="newsub"){const id=uid();const cs=s.cats.length?s.cats.map(c=>({name:c.name,w:c.w,g:c.g.map(()=>"")})):[{name:"Exàmens",w:"60",g:[""]},{name:"Treballs",w:"40",g:[""]}];S.subjects.push({id,name:"Nova assignatura",target:s.target,cats:cs});S.sel=id;render();const nm=$('[data-f="sname"]');nm.focus();nm.select();return}
+ if(a==="delsub"){
+  if(!armed){armed=1;b.textContent="Segur? Prem de nou";setTimeout(()=>{armed=0;if(b.isConnected)b.textContent="Elimina"},3000);return}
+  armed=0;S.subjects=S.subjects.filter(x=>x.id!==s.id);if(!S.subjects.length)S=defaults();S.sel=S.subjects[0].id;return render();
+ }
+ if(a==="addcat"){s.cats.push({name:"",w:"",g:[""]});return render()}
+ if(a==="delcat"){s.cats.splice(b.dataset.c,1);return render()}
+ if(a==="addg"){c.g.push("");render();const gs=document.querySelectorAll('[data-f="g"][data-c="'+b.dataset.c+'"]');gs[gs.length-1].focus();return}
+ if(a==="delg"){if(c.g.length>1)c.g.pop();return render()}
+});
+
+/* Accés */
+const FG=["Llengua catalana i literatura","Llengua castellana i literatura","Llengua estrangera","Història o Història de la filosofia","Matèria comuna d’opció (Matemàtiques, Llatí…)"];
+$("#fg").innerHTML=FG.map(n=>'<label class="fa"><span>'+n+'</span><input class="pg" inputmode="decimal" placeholder="Nota"></label>').join("");
+$("#esp").innerHTML=[1,2,3].map(i=>'<div class="row erow" style="--cols:1fr 4.5rem 5.5rem"><input placeholder="Matèria '+i+'" aria-label="Nom de la matèria '+i+'"><input class="eg" inputmode="decimal" placeholder="Nota" aria-label="Nota de la matèria '+i+'"><select class="ep" aria-label="Ponderació de la matèria '+i+'"><option value="0">0</option><option value="0.1">0,1</option><option value="0.2" selected>0,2</option></select></div>').join("");
+function calcAcces(){
+ const id="r-batxillerat",nmb=num($("#nmb").value);
+ const pg=[...document.querySelectorAll(".pg")].map(i=>num(i.value)).filter(x=>!isNaN(x));
+ const es=[...document.querySelectorAll(".erow")].map(r=>({g:num(r.querySelector(".eg").value),p:parseFloat(r.querySelector(".ep").value)})).filter(o=>!isNaN(o.g));
+ if(isNaN(nmb))return show(id,"Escriu la nota mitjana de batxillerat","És la mitjana de tot el batxillerat (1r i 2n), amb decimals.",1);
+ if(bad(nmb)||pg.some(bad)||es.some(o=>bad(o.g)))return show(id,"Revisa les dades","Totes les notes han d’estar entre 0 i 10.",1);
+ if(!pg.length)return show(id,"Batxillerat: "+fmt(nmb),"Escriu les notes de la fase general de la PAU per veure la nota d’accés.");
+ const fg=pg.reduce((a,b)=>a+b,0)/pg.length;
+ if(fg<4)return show(id,"Fase general: "+fmt(fg,3),"Amb menys d’un 4 de mitjana a la fase general no es fa mitjana amb el batxillerat.",1);
+ const acc=0.6*nmb+0.4*fg;
+ const best=es.filter(o=>o.g>=5&&o.p>0).map(o=>o.g*o.p).sort((a,b)=>b-a).slice(0,2).reduce((a,b)=>a+b,0);
+ const base="60 % batxillerat + 40 % fase general (que és un "+fmt(fg,3)+")";
+ let main,sub;
+ if(es.length){main="Nota d’admissió: "+fmt(acc+best,3);sub="Nota d’accés: "+fmt(acc,3)+" ("+base+"). Les específiques sumen "+fmt(best,3)+".";if(es.some(o=>o.g<5&&o.p>0))sub+=" Les matèries amb menys d’un 5 no sumen."}
+ else{main="Nota d’accés: "+fmt(acc,3);sub=base+"."}
+ if(pg.length<5)sub+=" Provisional: et falten "+(5-pg.length)+" notes de la fase general.";
+ if(acc<5)sub+=" Està per sota del 5: no superes l’accés.";
+ show(id,main,sub);
+}
+$("#p-batxillerat").addEventListener("input",calcAcces);
+$("#p-batxillerat").addEventListener("change",calcAcces);
+
+const names=["assignatures","batxillerat"];
+function showTab(n){
+ if(!names.includes(n))n=names[0];
+ names.forEach(k=>{const on=k===n;$("#p-"+k).hidden=!on;$("#t-"+k).setAttribute("aria-selected",on);$("#t-"+k).tabIndex=on?0:-1});
+}
+names.forEach(k=>$("#t-"+k).onclick=()=>{location.hash=k;showTab(k)});
+addEventListener("hashchange",()=>showTab(location.hash.slice(1)));
+render();calcAcces();showTab(location.hash.slice(1));
+</script>
+</body>
+</html>
